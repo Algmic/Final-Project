@@ -33,13 +33,19 @@ public class tankGameRough extends JComponent implements KeyListener{
     long desiredFPS = 60;
     long desiredTime = (1000)/desiredFPS;
     
+    //generate a randum number
     int randNum = (int)(Math.random()*(255 - 0 + 1))+ 0;
     
+    //create a slider to determine angle
     JSlider angle = new JSlider(0,180,180);
+    //create a slider to determine power
     JSlider power = new JSlider(0,180,180);   
+    //create a slider to determine movement
+    JSlider movement = new JSlider(0,200,100); 
     
-    boolean left = false;
-    boolean right = false;
+    //key commands
+    //boolean left = false;
+    //boolean right = false;
     
     BufferedImage bg = loadImage("stock_backround.jpg");
     
@@ -151,7 +157,7 @@ public class tankGameRough extends JComponent implements KeyListener{
      */
     public static void main(String[] args) {
         // creates a windows to show my game
-        JFrame frame = new JFrame("My Game");
+        JFrame frame = new JFrame("Tank Game");
        
         // creates an instance of my game
         tankGameRough game = new tankGameRough();
@@ -180,21 +186,11 @@ public class tankGameRough extends JComponent implements KeyListener{
 
     @Override
     public void keyPressed(KeyEvent e) {
-        int key = e.getKeyCode();
-        if(key == KeyEvent.VK_A){
-            left = true;
-        }else if(key == KeyEvent.VK_D){
-            right = true;
-        }
+        
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        int key = e.getKeyCode();
-        if(key == KeyEvent.VK_A){
-            left = false;
-        }else if(key == KeyEvent.VK_D){
-            right = false;
-        }
+        
     }
 }
