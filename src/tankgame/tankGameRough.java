@@ -57,13 +57,13 @@ public class tankGameRough extends JComponent implements KeyListener{
         
         this.add(angle);
         this.add(power);
+        this.add(movement);
         
-        angle.setFocusCycleRoot(false);
-        power.setFocusCycleRoot(false);
         
     
         angle.setBounds(50, 50, 100, 20);
         power.setBounds(250,50,100,20);
+        movement.setBounds(450,50,100,20);
         
 
     }
@@ -122,7 +122,7 @@ public class tankGameRough extends JComponent implements KeyListener{
             
             // all your game rules and move is done in here
             // GAME LOGIC STARTS HERE 
-            if(right){
+            if(movement > 100){
                 x = x + 1;
             }
             if(left){
