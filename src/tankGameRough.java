@@ -123,7 +123,7 @@ public class tankGameRough extends JComponent implements KeyListener{
         
         //missile
         g.setColor(Color.gray);
-        g.fillRect(tank.x + 10, tank.y, missile.width, missile.height);
+        g.fillRect(missile.x, missile.y, missile.width, missile.height);
 
         // GAME DRAWING ENDS HERE
     }
@@ -190,7 +190,8 @@ public class tankGameRough extends JComponent implements KeyListener{
                 //subtract from fuel
                 fuel = fuel - 1;
             }   
-                
+        
+         if(ready && !dead){   
             //get the bird to fall
             //apply gravity
             dy = dy + gravity;
@@ -200,13 +201,12 @@ public class tankGameRough extends JComponent implements KeyListener{
             
             //projectile 
             //make the missile fly
-          if(ready && !dead){
                dy = missileVelocity;
                
-             }
+             
           
             }
-          
+            }
         
                 
         
