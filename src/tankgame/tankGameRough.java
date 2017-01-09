@@ -16,7 +16,7 @@ import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.SwingConstants;
 
-/**
+/**credit goes to shellshock Live for inspiring me to program a similar game
  *
  * @author micla1676
  */
@@ -33,21 +33,29 @@ public class tankGameRough extends JComponent implements KeyListener{
     long desiredFPS = 60;
     long desiredTime = (1000)/desiredFPS;
     
-    //generate a randum number
-    int randNum = (int)(Math.random()*(255 - 0 + 1))+ 0;
     
     //create a slider to determine angle
     JSlider angle = new JSlider(0,180,180);
     //create a slider to determine power
     JSlider power = new JSlider(0,180,180);   
     //create a slider to determine movement
-    JSlider movement = new JSlider(0,200,100); 
+    JSlider movement = new JSlider(0,2,1); 
     
     //key commands
     //boolean left = false;
     //boolean right = false;
     
-    BufferedImage bg = loadImage("stock_backround.jpg");
+    //create a variable to store fuel
+    int fuel = 250;
+    
+    //create variable to test if character is dead or not
+    boolean dead = false;
+    
+    //jump key variable
+    boolean launch = false;
+    
+    //code for loading backround image
+   // BufferedImage bg = loadImage("stock_backround.jpg");
     
     int x = 100;
     int y = 100;
@@ -57,13 +65,12 @@ public class tankGameRough extends JComponent implements KeyListener{
         
         this.add(angle);
         this.add(power);
-        this.add(movement);
         
-        
+        angle.setFocusable(false);
+        power.setFocusable(false);
     
         angle.setBounds(50, 50, 100, 20);
         power.setBounds(250,50,100,20);
-        movement.setBounds(450,50,100,20);
         
 
     }
@@ -84,14 +91,18 @@ public class tankGameRough extends JComponent implements KeyListener{
 
         g.fillRect(0, 0, WIDTH, HEIGHT);
         
-        g.drawImage(bg, 0, 0, WIDTH, HEIGHT, null);
+        //code for loading backround image
+      //g.drawImage(bg, 0, 0, WIDTH, HEIGHT, null);
         
         g.setColor(Color.red);
-        g.fillRect(x, y, 50, 50);
+        g.fillRect(x, y, 10, 10);
         // GAME DRAWING ENDS HERE
     }
     
     
+    //code for loading backround image
+    
+    /*
     public BufferedImage loadImage(String filename){
         BufferedImage img = null;
         try{
@@ -102,11 +113,12 @@ public class tankGameRough extends JComponent implements KeyListener{
         }
         return img;
     }
-    
+    */
     // The main game loop
     // In here is where all the logic for my game will go
     public void run()
     {
+        
         // Used to keep track of time used to draw and update the game
         // This is used to limit the framerate later on
         long startTime;
@@ -122,12 +134,37 @@ public class tankGameRough extends JComponent implements KeyListener{
             
             // all your game rules and move is done in here
             // GAME LOGIC STARTS HERE 
-            if(movement > 100){
+            
+            //get tank to move
+            //stop if the slider is at position 1 or if fuel is 0
+            if(movement.getValue() == 1 ||  fuel == 0){
+            }
+            //if movement value is greater then 1 and fuel value is greater then 0
+            if(movement.getValue() > 1 && fuel > 0){
+                //add 1 to x
                 x = x + 1;
+                //subtract 1 from fuel
+                fuel = fuel - 1;
             }
-            if(left){
+            //if movement value is less then 1 and fuel value is greater then 0
+            if(movement.getValue() < 1 && fuel > 0){
+                //subtract from x
                 x = x - 1;
+                //subtract from fuel
+                fuel = fuel - 1;
+            }   
+                
+      
+            //projectile 
+            //make the bird fly
+            if(launch && !dead){
+               // dy = jumpVelocity;
             }
+            //lastJump = jump;
+            
+            
+                
+            
 
             // GAME LOGIC ENDS HERE 
             
@@ -151,6 +188,7 @@ public class tankGameRough extends JComponent implements KeyListener{
             }
         }
     }
+    
     
     /**
      * @param args the command line arguments
@@ -186,11 +224,23 @@ public class tankGameRough extends JComponent implements KeyListener{
 
     @Override
     public void keyPressed(KeyEvent e) {
-        
+         int key = e.getKeyCode();
+         if(key == KeyEvent.VK_A){
+        movement.setValue(0);
+    }
+        if(key == KeyEvent.VK_D){
+        movement.setValue(2);
+    }
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        
+         int key = e.getKeyCode();
+        if(key == KeyEvent.VK_A){
+            movement.setValue(1);
     }
+        if(key == KeyEvent.VK_D){
+            movement.setValue(1);
+    }
+}
 }
