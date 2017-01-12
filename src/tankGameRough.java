@@ -66,9 +66,9 @@ public class tankGameRough extends JComponent implements KeyListener {
     //make gravity
     int gravity = 1;
     //difference in y
-    int dy = (int)Math.sin(Math.toRadians(angle.getValue()));
+    double dy = Math.sin(Math.toRadians(angle.getValue()));
     //change in x
-    int dx = (int)Math.cos(angle.getValue()) * power.getValue();
+    double dx = Math.cos(angle.getValue()) * power.getValue();
     //create variable to test if character is dead or not
     boolean dead = false;
     //jump key variable
@@ -214,11 +214,11 @@ public class tankGameRough extends JComponent implements KeyListener {
                 if (!dead && ready) { 
                             //get the missile to fall
                             //apply gravity
-                           dy = dy + gravity + (int)(Math.sin(Math.toRadians(angle.getValue())) * -1 * 10);
+                           dy = dy + gravity + (Math.sin(Math.toRadians(angle.getValue())) * -1 * 10);
                             //apply change in y to the bird
-                           smissile.y = smissile.y + dy;
+                           smissile.y = smissile.y + (int)dy;
                            
-                           dx = -(int)(Math.cos(Math.toRadians(angle.getValue())) * power.getValue() * 10);
+                           dx = -(Math.cos(Math.toRadians(angle.getValue())) * power.getValue() * 10);
                            smissile.x += dx;
                         }
              
