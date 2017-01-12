@@ -10,6 +10,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.Random;
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -44,9 +45,11 @@ public class tankGameRough extends JComponent implements KeyListener {
     //create shadow version of tank and missile
     //create tank
     Rectangle stank = new Rectangle(100, 400, 20, 20);
-    //create projectile
+    //create shadow projectile
     Rectangle smissile = new Rectangle(tank.x + 10, tank.y, 10, 10);
-    
+    //create shadow projectile
+    //create ghost rectangle
+    Rectangle gmissile = new Rectangle(tank.x + 10, tank.y, 10, 10);
     
     
     //create a slider to determine angle
@@ -63,7 +66,9 @@ public class tankGameRough extends JComponent implements KeyListener {
     //make gravity
     int gravity = 1;
     //difference in y
-    int dy = 0;
+    int dy = (int)Math.sin(Math.toRadians(angle.getValue()));
+    //change in x
+    int dx = (int)Math.cos(angle.getValue()) * power.getValue();
     //create variable to test if character is dead or not
     boolean dead = false;
     //jump key variable
@@ -117,17 +122,14 @@ public class tankGameRough extends JComponent implements KeyListener {
         g.fillRect(tank.x, tank.y, tank.width, tank.height);
 
         
-        missile.x = tank.x;
-        missile.y = tank.y;
-        
-        //missile when stationary
-        //g.setColor(Color.red);
-       // g.fillRect(tank.x + 10, tank.y, missile.width, missile.height);
-        
         
         //missile when in motion
         g.setColor(Color.gray);
-        g.fillRect(tank.x + 10, smissile.y, missile.width, missile.height);
+        g.fillRect(smissile.x, smissile.y, missile.width, missile.height);
+        
+        //ghost missile
+        //g.setColor(Color.gray);
+       // g.fillRect(tank.x + 10, tank.y, missile.width, missile.height);
 
         // GAME DRAWING ENDS HERE
     }
@@ -147,6 +149,16 @@ public class tankGameRough extends JComponent implements KeyListener {
      */
     // The main game loop
     // In here is where all the logic for my game will go
+    public void reset(){
+        //reset the bird
+        smissile.x = tank.x + 10;
+        smissile.y = tank.y;
+        dy = 0;
+        dx = 0;
+        ready = false;
+        dead = false; 
+    }
+    
     public void run() {
 
 
@@ -194,6 +206,7 @@ public class tankGameRough extends JComponent implements KeyListener {
                         int missileVelocity = power.getValue() * -1;
                         //set dy to be equal to missile velocity
                         dy = missileVelocity;
+                        
                     }
                 });
                
@@ -201,17 +214,28 @@ public class tankGameRough extends JComponent implements KeyListener {
                 if (!dead && ready) { 
                             //get the missile to fall
                             //apply gravity
-                           dy = dy + gravity;
+                           dy = dy + gravity + (int)(Math.sin(Math.toRadians(angle.getValue())) * -1 * 10);
                             //apply change in y to the bird
                            smissile.y = smissile.y + dy;
+                           
+                           dx = -(int)(Math.cos(Math.toRadians(angle.getValue())) * power.getValue() * 10);
+                           smissile.x += dx;
                         }
              
+                
+                
+                
+                
+                
+                
+                
+                
                 //test if the missile hit the ground
               if(smissile.y > 590){
                   //set the missile to a height of 590
                     smissile.y = 590;
-                    //set ready to false
-                    ready = false;
+                    
+                    reset();
               }
             // GAME LOGIC ENDS HERE 
 
