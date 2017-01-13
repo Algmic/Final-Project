@@ -198,11 +198,11 @@ public class tankGameRough extends JComponent implements KeyListener {
                     if (ready) {
                         ready = false;
                         //get the value of the power slider
-                        int missileVelocity = power.getValue() * -1;
+                        double missileVelocity = -(power.getValue());
                         //set dy to be equal to missile velocity
                         dy = missileVelocity;
 
-                        dx = (Math.cos(Math.toRadians(angle.getValue())) /* power.getValue()*/ * 1000);
+                        dx = (Math.cos(Math.toRadians(angle.getValue())) * 100);
                     }
                 }
             });
@@ -218,7 +218,7 @@ public class tankGameRough extends JComponent implements KeyListener {
                 System.out.println("y = " + smissile.y);
 
 
-                smissile.x += -dx;
+                smissile.x += (int) -dx;
                 System.out.println("x = " + smissile.x);
             }
 
