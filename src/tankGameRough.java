@@ -33,15 +33,12 @@ public class tankGameRough extends JComponent implements KeyListener {
     // you just need to select an approproate framerate
     long desiredFPS = 60;
     long desiredTime = (1000) / desiredFPS;
-    
-    
     //create boolean ready
-    boolean ready = false;
+    boolean ready = true;
     //create tank
     Rectangle tank = new Rectangle(100, 400, 20, 20);
     //create projectile
     Rectangle missile = new Rectangle(tank.x + 10, tank.y, 10, 10);
-    
     //create shadow version of tank and missile
     //create tank
     Rectangle stank = new Rectangle(100, 400, 20, 20);
@@ -50,25 +47,22 @@ public class tankGameRough extends JComponent implements KeyListener {
     //create shadow projectile
     //create ghost rectangle
     Rectangle gmissile = new Rectangle(tank.x + 10, tank.y, 10, 10);
-    
-    
     //create a slider to determine angle
     JSlider angle = new JSlider(0, 180, 180);
     //create a slider to determine power
-    JSlider power = new JSlider(0, 100, 50);
+    JSlider power = new JSlider(0, 50, 25);
     //create a slider to determine movement
     JSlider movement = new JSlider(0, 2, 1);
     //create a button to test if player is ready
     JButton readyb = new JButton("Ready");
-
     //create a variable to store fuel
     int fuel = 250;
     //make gravity
     int gravity = 1;
     //difference in y
-    double dy = Math.sin(Math.toRadians(angle.getValue()));
+    double dy = 0;
     //change in x
-    double dx = Math.cos(angle.getValue()) * power.getValue();
+    double dx = 0;
     //create variable to test if character is dead or not
     boolean dead = false;
     //jump key variable
@@ -109,7 +103,7 @@ public class tankGameRough extends JComponent implements KeyListener {
 
         // GAME DRAWING GOES HERE 
 
-        g.setColor(new Color(angle.getValue(), power.getValue(), 255));
+        // g.setColor(new Color(angle.getValue(), power.getValue(), 255));
 
         g.fillRect(0, 0, WIDTH, HEIGHT);
 
@@ -121,15 +115,15 @@ public class tankGameRough extends JComponent implements KeyListener {
         g.setColor(Color.red);
         g.fillRect(tank.x, tank.y, tank.width, tank.height);
 
-        
-        
+
+
         //missile when in motion
         g.setColor(Color.gray);
         g.fillRect(smissile.x, smissile.y, missile.width, missile.height);
-        
+
         //ghost missile
         //g.setColor(Color.gray);
-       // g.fillRect(tank.x + 10, tank.y, missile.width, missile.height);
+        // g.fillRect(tank.x + 10, tank.y, missile.width, missile.height);
 
         // GAME DRAWING ENDS HERE
     }
@@ -149,21 +143,21 @@ public class tankGameRough extends JComponent implements KeyListener {
      */
     // The main game loop
     // In here is where all the logic for my game will go
-    public void reset(){
+    public void reset() {
         //reset the bird
         smissile.x = tank.x + 10;
         smissile.y = tank.y;
         dy = 0;
         dx = 0;
-        ready = false;
-        dead = false; 
+        ready = true;
+        dead = false;
     }
-    
+
     public void run() {
 
 
 
-        
+
         // Used to keep track of time used to draw and update the game
         // This is used to limit the framerate later on
         long startTime;
@@ -178,65 +172,68 @@ public class tankGameRough extends JComponent implements KeyListener {
 
             // all your game rules and move is done in here
             // GAME LOGIC STARTS HERE 
-      //get tank to move
-                //stop if the slider is at position 1 or if fuel is 0
-                if (movement.getValue() == 1 || fuel == 0) {
-                }
-                //if movement value is greater then 1 and fuel value is greater then 0
-                if (movement.getValue() > 1 && fuel > 0) {
-                    //add 1 to x
-                    tank.x = tank.x + 1;
-                    //subtract 1 from fuel
-                    fuel = fuel - 1;
-                }
-                //if movement value is less then 1 and fuel value is greater then 0
-                if (movement.getValue() < 1 && fuel > 0) {
-                    //subtract from x
-                    tank.x = tank.x - 1;
-                    //subtract from fuel
-                    fuel = fuel - 1;
-                }
+            //get tank to move
+            //stop if the slider is at position 1 or if fuel is 0
+            if (movement.getValue() == 1 || fuel == 0) {
+            }
+            //if movement value is greater then 1 and fuel value is greater then 0
+            if (movement.getValue() > 1 && fuel > 0) {
+                //add 1 to x
+                tank.x = tank.x + 1;
+                //subtract 1 from fuel
+                fuel = fuel - 1;
+            }
+            //if movement value is less then 1 and fuel value is greater then 0
+            if (movement.getValue() < 1 && fuel > 0) {
+                //subtract from x
+                tank.x = tank.x - 1;
+                //subtract from fuel
+                fuel = fuel - 1;
+            }
 
-                readyb.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        ready = true;
-                        
+
+            readyb.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (ready) {
+                        ready = false;
                         //get the value of the power slider
                         int missileVelocity = power.getValue() * -1;
                         //set dy to be equal to missile velocity
                         dy = missileVelocity;
-                        
+
+                        dx = (Math.cos(Math.toRadians(angle.getValue())) /* power.getValue()*/ * 1000);
                     }
-                });
-               
-                //if the player is not dead, and the ready button is pressed
-                if (!dead && ready) { 
-                            //get the missile to fall
-                            //apply gravity
-                           dy = dy + gravity + (Math.sin(Math.toRadians(angle.getValue())) * -1 * 10);
-                            //apply change in y to the bird
-                           smissile.y = smissile.y + (int)dy;
-                           
-                           dx = -(Math.cos(Math.toRadians(angle.getValue())) * power.getValue() * 10);
-                           smissile.x += dx;
-                        }
-             
-                
-                
-                
-                
-                
-                
-                
-                
-                //test if the missile hit the ground
-              if(smissile.y > 590){
-                  //set the missile to a height of 590
-                    smissile.y = 590;
-                    
-                    reset();
-              }
+                }
+            });
+
+
+            //if the player is not dead, and the ready button is pressed
+            if (!dead && !ready) {
+                //get the missile to fall
+                //apply gravity
+                dy = dy + gravity; //* ((Math.sin(Math.toRadians(angle.getValue())))) * 100;
+                //apply change in y to the bird
+                smissile.y = smissile.y + (int) dy;
+                System.out.println("y = " + smissile.y);
+
+
+                smissile.x += -dx;
+                System.out.println("x = " + smissile.x);
+            }
+
+            //test if the missile hit the ground
+            if (smissile.y > 590) {
+                //set the missile to a height of 590
+                smissile.y = 590;
+                smissile.x = tank.x + 10;
+                smissile.y = tank.y;
+                dy = 0;
+                dx = 0;
+                ready = true;
+                dead = false;
+                //reset();
+            }
             // GAME LOGIC ENDS HERE 
 
             // update the drawing (calls paintComponent)
