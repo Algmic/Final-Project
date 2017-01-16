@@ -50,7 +50,7 @@ public class tankGameRough extends JComponent implements KeyListener {
     //create a slider to determine angle
     JSlider angle = new JSlider(0, 180, 90);
     //create a slider to determine power
-    JSlider power = new JSlider(1, 21, 11);
+    JSlider power = new JSlider(1, 22, 11);
     //create a slider to determine movement
     JSlider movement = new JSlider(0, 2, 1);
     //create a button to test if player is ready
@@ -86,8 +86,8 @@ public class tankGameRough extends JComponent implements KeyListener {
         readyb.setFocusable(false);
 
         //set the bounds for the slider
-        angle.setBounds(0, 0, 200, 40);
-        power.setBounds(250, 50, 100, 20);
+        angle.setBounds(0, 0, 200, 20);
+        power.setBounds(200, 0, 200, 20);
         readyb.setBounds(450, 50, 100, 20);
 
 
@@ -198,13 +198,12 @@ public class tankGameRough extends JComponent implements KeyListener {
                     if (ready) {
                         ready = false;
                         //get the value of the power slider
-                        double missileVelocity = -(power.getValue());
+                        //double missileVelocity = -(power.getValue());
                         //set dy to be equal to missile velocity
-                        dy = missileVelocity;
+                        dy = (Math.sin(Math.toRadians(angle.getValue())) * 10);
                        
                         dx = (Math.cos(Math.toRadians(angle.getValue())) * 100);
-                        System.out.println(dx);
-                         dx = dx;
+                        
                     }
                 }
             });
@@ -214,13 +213,13 @@ public class tankGameRough extends JComponent implements KeyListener {
             if (!dead && !ready) {
                 //get the missile to fall
                 //apply gravity
-                dy = dy + gravity;// + -((Math.sin(Math.toRadians(angle.getValue()))));
+                dy = (dy + gravity) * power.getValue();
                 //apply change in y to the bird
-                smissile.y = smissile.y + (int) dy;
+                smissile.y = smissile.y + (int) -dy;
                // System.out.println("y = " + smissile.y);
 
 
-                smissile.x = ((int) -dx + smissile.x);  //(power.getValue()/2);
+                smissile.x = (int) (-dx + smissile.x) * power.getValue()  ;  //(power.getValue()/2);
                 //System.out.println("x = " + smissile.x);
             }
 
