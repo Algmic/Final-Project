@@ -213,13 +213,13 @@ public class tankGameRough extends JComponent implements KeyListener {
             if (!dead && !ready) {
                 //get the missile to fall
                 //apply gravity
-                dy = (dy + gravity) * power.getValue();
+                dy = (dy - gravity) * (1/2* power.getValue());
                 //apply change in y to the bird
                 smissile.y = smissile.y + (int) -dy;
                // System.out.println("y = " + smissile.y);
 
 
-                smissile.x = (int) (-dx + smissile.x) * power.getValue()  ;  //(power.getValue()/2);
+                smissile.x = (int) (-dx + smissile.x) * (1/2 * power.getValue())  ;  //(power.getValue()/2);
                 //System.out.println("x = " + smissile.x);
             }
 
