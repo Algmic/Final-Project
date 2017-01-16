@@ -48,9 +48,9 @@ public class tankGameRough extends JComponent implements KeyListener {
     //create ghost rectangle
     Rectangle gmissile = new Rectangle(tank.x + 10, tank.y, 10, 10);
     //create a slider to determine angle
-    JSlider angle = new JSlider(0, 180, 180);
+    JSlider angle = new JSlider(0, 180, 90);
     //create a slider to determine power
-    JSlider power = new JSlider(0, 50, 25);
+    JSlider power = new JSlider(1, 21, 11);
     //create a slider to determine movement
     JSlider movement = new JSlider(0, 2, 1);
     //create a button to test if player is ready
@@ -86,7 +86,7 @@ public class tankGameRough extends JComponent implements KeyListener {
         readyb.setFocusable(false);
 
         //set the bounds for the slider
-        angle.setBounds(50, 50, 100, 20);
+        angle.setBounds(0, 0, 200, 40);
         power.setBounds(250, 50, 100, 20);
         readyb.setBounds(450, 50, 100, 20);
 
@@ -201,8 +201,10 @@ public class tankGameRough extends JComponent implements KeyListener {
                         double missileVelocity = -(power.getValue());
                         //set dy to be equal to missile velocity
                         dy = missileVelocity;
-
+                       
                         dx = (Math.cos(Math.toRadians(angle.getValue())) * 100);
+                        System.out.println(dx);
+                         dx = dx;
                     }
                 }
             });
@@ -212,14 +214,14 @@ public class tankGameRough extends JComponent implements KeyListener {
             if (!dead && !ready) {
                 //get the missile to fall
                 //apply gravity
-                dy = dy + gravity; //* ((Math.sin(Math.toRadians(angle.getValue())))) * 100;
+                dy = dy + gravity;// + -((Math.sin(Math.toRadians(angle.getValue()))));
                 //apply change in y to the bird
                 smissile.y = smissile.y + (int) dy;
-                System.out.println("y = " + smissile.y);
+               // System.out.println("y = " + smissile.y);
 
 
-                smissile.x += (int) -dx;
-                System.out.println("x = " + smissile.x);
+                smissile.x = ((int) -dx + smissile.x);  //(power.getValue()/2);
+                //System.out.println("x = " + smissile.x);
             }
 
             //test if the missile hit the ground
