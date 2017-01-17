@@ -71,6 +71,12 @@ public class tankGameRough extends JComponent implements KeyListener {
     boolean eDead = false;
     //enemy fired variable
     boolean eLaunch = false;
+    //boolean to toggle between calculating enemy trajectory and not
+    boolean eTraj = true;
+    
+    boolean lv1 = false;
+    boolean lv2 = false;
+    boolean lv3 = false;
     
     
     //create a variable to store fuel
@@ -161,13 +167,15 @@ public class tankGameRough extends JComponent implements KeyListener {
         g.fillRect(eTank.x, eTank.y, eTank.width, eTank.height);
         //enemy missile
         g.setColor(Color.gray);
-        g.fillRect(eTank.x, eTank.y, eMissile.width, eMissile.height);
+        g.fillRect(eMissile.x, eMissile.y, eMissile.width, eMissile.height);
 
         // GAME DRAWING ENDS HERE
     }
 
     //code for loading backround image
-    /*
+    
+    if(lv1 == true){
+    }
      public BufferedImage loadImage(String filename){
      BufferedImage img = null;
      try{
@@ -178,7 +186,7 @@ public class tankGameRough extends JComponent implements KeyListener {
      }
      return img;
      }
-     */
+     
     // The main game loop
     
     public void reset() {
@@ -192,6 +200,7 @@ public class tankGameRough extends JComponent implements KeyListener {
                 ready = true;
                 eLaunch = false;
                 dead = false;
+                eTraj = true;
     }
     public void player(){
         if(missile.y < 590){
@@ -226,16 +235,17 @@ public class tankGameRough extends JComponent implements KeyListener {
     }
     
     public void enemy(int randAngle,int randPower){
-                        
-        for(int i=0; i<1; i++){
-                        //multiply the sin of the angle by 2x the power slider
-                        dy = (Math.sin(Math.toRadians(randAngle)) * 1) * (2 * randPower);
-                        
-                        //multiply the cos of the angle by 2x the power slider
-                        dx = (Math.cos(Math.toRadians(randAngle)) * 1) * (2 * randPower);
-                        }
+        
+        if(eTraj){
+        //multiply the sin of the angle by 2x the power slider
+        dy = (Math.sin(Math.toRadians(randAngle)) * 1) * (2 * randPower);
+        
+        //multiply the cos of the angle by 2x the power slider
+        dx = (Math.cos(Math.toRadians(randAngle)) * 1) * (2 * randPower);
+        eTraj = false;
+        }
         //if the player is not dead, and the ready button is pressed
-            if (!dead && !ready) {
+            if (!eDead && !ready) {
                 //get the missile to fall
                 //apply gravity
                 dy = (dy - gravity);
@@ -321,8 +331,8 @@ public class tankGameRough extends JComponent implements KeyListener {
             if (!ready && missile.y > 590 && !eDead) {
                 if(!eLaunch){
                 //generate a random number for the power
-                int randAngle = (int)(Math.random()*(90 - 1 + 1))+ 1;
-                int randPower = (int)(Math.random()*(22 - 1 + 1))+ 1;
+                randAngle = (int)(Math.random()*(90 - 1 + 1))+ 1;
+                randPower = (int)(Math.random()*(22 - 1 + 1))+ 1;
                 eLaunch = true;
                 }
                 enemy(randAngle,randPower);
@@ -398,6 +408,21 @@ public class tankGameRough extends JComponent implements KeyListener {
         }
         if (key == KeyEvent.VK_RIGHT) {
             movement.setValue(2);
+        }
+        if (key == KeyEvent.VK_1) {
+            lv1 = true;
+            lv2 = false;
+            lv3 = false;        
+        }
+        if (key == KeyEvent.VK_2) {
+            lv1 = false;
+            lv2 = true;
+            lv3 = false;  
+        }
+        if (key == KeyEvent.VK_3) {
+            lv1 = false;
+            lv2 = false;
+            lv3 = true;  
         }
 
     }
