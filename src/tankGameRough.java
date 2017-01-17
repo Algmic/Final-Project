@@ -16,6 +16,7 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.JSlider;
 import javax.swing.SwingConstants;
 
@@ -54,9 +55,7 @@ public class tankGameRough extends JComponent implements KeyListener {
     //create a slider to determine movement
     JSlider movement = new JSlider(0, 2, 1);
     //create a button to test if player is ready
-    JButton readyb = new JButton("Ready");
-    //create a variable to store fuel
-    int fuel = 250;
+    JButton readyB = new JButton("Ready");
     //make gravity
     int gravity = 1;
     //difference in y
@@ -67,6 +66,14 @@ public class tankGameRough extends JComponent implements KeyListener {
     boolean dead = false;
     //jump key variable
     boolean launch = false;
+    
+        //create a variable to store fuel
+        int fuel = 250;
+        //convert int fuel into a string
+        String fuelS = Integer.toString(fuel);
+        //create a textfield to display fuel levels
+        
+    JTextField fuelD = new JTextField(fuelS);
     //code for loading backround image
     // BufferedImage bg = loadImage("stock_backround.jpg");
     int x = 100;
@@ -78,17 +85,20 @@ public class tankGameRough extends JComponent implements KeyListener {
         //add angle, and power,
         this.add(angle);
         this.add(power);
-        this.add(readyb);
+        this.add(readyB);
+        this.add(fuelD);
 
         //remove focus from the sliders to allow key commands to work
         angle.setFocusable(false);
         power.setFocusable(false);
-        readyb.setFocusable(false);
+        readyB.setFocusable(false);
+        fuelD.setFocusable(false);
 
         //set the bounds for the slider
         angle.setBounds(0, 0, 200, 20);
         power.setBounds(200, 0, 200, 20);
-        readyb.setBounds(450, 50, 100, 20);
+        readyB.setBounds(450, 50, 100, 20);
+        fuelD.setBounds(650, 50, 100, 20);
 
 
     }
@@ -155,9 +165,10 @@ public class tankGameRough extends JComponent implements KeyListener {
 
     public void run() {
 
-
-
-
+        //convert int fuel into a string
+       fuelS = Integer.toString(fuel);
+       fuelD.setEditable(false);
+       
         // Used to keep track of time used to draw and update the game
         // This is used to limit the framerate later on
         long startTime;
@@ -172,6 +183,8 @@ public class tankGameRough extends JComponent implements KeyListener {
 
             // all your game rules and move is done in here
             // GAME LOGIC STARTS HERE 
+            
+            
             //get tank to move
             //stop if the slider is at position 1 or if fuel is 0
             if (movement.getValue() == 1 || fuel == 0) {
@@ -180,6 +193,7 @@ public class tankGameRough extends JComponent implements KeyListener {
             if (movement.getValue() > 1 && fuel > 0) {
                 //add 1 to x
                 tank.x = tank.x + 1;
+                smissile.x = smissile.x + 1;
                 //subtract 1 from fuel
                 fuel = fuel - 1;
             }
@@ -187,12 +201,13 @@ public class tankGameRough extends JComponent implements KeyListener {
             if (movement.getValue() < 1 && fuel > 0) {
                 //subtract from x
                 tank.x = tank.x - 1;
+                smissile.x = smissile.x - 1;
                 //subtract from fuel
                 fuel = fuel - 1;
             }
 
 
-            readyb.addActionListener(new ActionListener() {
+            readyB.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     if (ready) {
@@ -200,9 +215,9 @@ public class tankGameRough extends JComponent implements KeyListener {
                         //get the value of the power slider
                         //double missileVelocity = -(power.getValue());
                         //set dy to be equal to missile velocity
-                        dy = (Math.sin(Math.toRadians(angle.getValue())) * 10);
+                        dy = (Math.sin(Math.toRadians(angle.getValue())) * 1) * (2 * power.getValue());
                        
-                        dx = (Math.cos(Math.toRadians(angle.getValue())) * 100);
+                        dx = (Math.cos(Math.toRadians(angle.getValue())) * 1) *  (2 * power.getValue());
                         
                     }
                 }
@@ -213,20 +228,19 @@ public class tankGameRough extends JComponent implements KeyListener {
             if (!dead && !ready) {
                 //get the missile to fall
                 //apply gravity
-                dy = (dy - gravity) * (1/2* power.getValue());
+                dy = (dy - gravity);
                 //apply change in y to the bird
-                smissile.y = smissile.y + (int) -dy;
+                smissile.y +=(int)-dy;
                // System.out.println("y = " + smissile.y);
 
-
-                smissile.x = (int) (-dx + smissile.x) * (1/2 * power.getValue())  ;  //(power.getValue()/2);
+                
+                smissile.x +=(int)-dx ;  
                 //System.out.println("x = " + smissile.x);
             }
 
             //test if the missile hit the ground
             if (smissile.y > 590) {
-                //set the missile to a height of 590
-                smissile.y = 590;
+                
                 smissile.x = tank.x + 10;
                 smissile.y = tank.y;
                 dy = 0;
