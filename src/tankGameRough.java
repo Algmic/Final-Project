@@ -74,6 +74,16 @@ public class tankGameRough extends JComponent implements KeyListener {
         //create a textfield to display fuel levels
         
     JTextField fuelD = new JTextField(fuelS);
+    
+     String angleS = Integer.toString(fuel);
+        //create a textfield to display fuel levels
+        
+    JTextField fuelD = new JTextField(fuelS);
+    
+     String fuelS = Integer.toString(fuel);
+        //create a textfield to display fuel levels
+        
+    JTextField fuelD = new JTextField(fuelS);
     //code for loading backround image
     // BufferedImage bg = loadImage("stock_backround.jpg");
     int x = 100;
@@ -237,7 +247,8 @@ public class tankGameRough extends JComponent implements KeyListener {
                 smissile.x +=(int)-dx ;  
                 //System.out.println("x = " + smissile.x);
             }
-
+            fuelS = Integer.toString(fuel);
+            fuelD.setText(fuelS);
             //test if the missile hit the ground
             if (smissile.y > 590) {
                 
