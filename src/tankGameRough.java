@@ -38,20 +38,23 @@ public class tankGameRough extends JComponent implements KeyListener {
     boolean ready = true;
     //create tank
     Rectangle tank = new Rectangle(100, 400, 20, 20);
-    //create projectile
-    Rectangle missile = new Rectangle(tank.x + 10, tank.y, 10, 10);
+    
     //create shadow version of tank and missile
     //create tank
-    Rectangle stank = new Rectangle(100, 400, 20, 20);
-    //create shadow projectile
-    Rectangle smissile = new Rectangle(tank.x + 10, tank.y, 10, 10);
+    Rectangle eTank = new Rectangle(700, 400, 20, 20);
+    //create projectile
+    Rectangle missile = new Rectangle(tank.x + 10, tank.y, 10, 10);
     //create shadow projectile
     //create ghost rectangle
-    Rectangle gmissile = new Rectangle(tank.x + 10, tank.y, 10, 10);
+    Rectangle eMissile = new Rectangle(eTank.x, eTank.y, 10, 10);
     //create a slider to determine angle
     JSlider angle = new JSlider(0, 180, 90);
     //create a slider to determine power
     JSlider power = new JSlider(1, 22, 11);
+    
+    //create variables for enemy targeting
+    int randAngle = 0;
+    int randPower = 0;
     //create a slider to determine movement
     JSlider movement = new JSlider(0, 2, 1);
     //create a button to test if player is ready
@@ -64,53 +67,65 @@ public class tankGameRough extends JComponent implements KeyListener {
     double dx = 0;
     //create variable to test if character is dead or not
     boolean dead = false;
-    //jump key variable
-    boolean launch = false;
+    //create boolean to test if enemy is dead
+    boolean eDead = false;
+    //enemy fired variable
+    boolean eLaunch = false;
     
-        //create a variable to store fuel
-        int fuel = 250;
-        //convert int fuel into a string
-        String fuelS = Integer.toString(fuel);
-        //create a textfield to display fuel levels
-        
-    JTextField fuelD = new JTextField(fuelS);
     
-     String angleS = Integer.toString(fuel);
-        //create a textfield to display fuel levels
-        
+    //create a variable to store fuel
+    int fuel = 250;
+    //convert int fuel into a string
+    String fuelS = Integer.toString(fuel);
+    //create a textfield to display fuel levels
     JTextField fuelD = new JTextField(fuelS);
-    
-     String fuelS = Integer.toString(fuel);
-        //create a textfield to display fuel levels
-        
-    JTextField fuelD = new JTextField(fuelS);
+    //convert the value of the angle slider into a string
+    String angleS = Integer.toString(angle.getValue());
+    //create a textfield to display angle
+    JTextField angleD = new JTextField(angleS);
+    //convert the value of the power slider into a string
+    String powerS = Integer.toString(power.getValue());
+    //create a textfield to display power levels (which are over 9000)
+    JTextField powerD = new JTextField(powerS);
     //code for loading backround image
     // BufferedImage bg = loadImage("stock_backround.jpg");
     int x = 100;
     int y = 100;
 
     public tankGameRough() {
+        //set layout
         this.setLayout(null);
 
-        //add angle, and power,
+        //add angle
         this.add(angle);
+        //add power
         this.add(power);
+        //add ready button
         this.add(readyB);
+        //add fuel display
         this.add(fuelD);
-
-        //remove focus from the sliders to allow key commands to work
+        //display anglle
+        this.add(angleD);
+        //display power levels
+        this.add(powerD);
+       
+        //remove focus from the sliders, textboxes and buttons to allow key commands to work
         angle.setFocusable(false);
         power.setFocusable(false);
         readyB.setFocusable(false);
         fuelD.setFocusable(false);
+        angleD.setFocusable(false);
+        powerD.setFocusable(false);
 
-        //set the bounds for the slider
+        //set the bounds for the sliders
         angle.setBounds(0, 0, 200, 20);
         power.setBounds(200, 0, 200, 20);
+        //set bounds for the ready button
         readyB.setBounds(450, 50, 100, 20);
+        //set bounds for the text boxes
         fuelD.setBounds(650, 50, 100, 20);
-
-
+        angleD.setBounds(0, 20, 100, 20);
+        powerD.setBounds(200, 20, 100, 20);
     }
 
     // drawing of the game happens in here
@@ -123,27 +138,30 @@ public class tankGameRough extends JComponent implements KeyListener {
 
         // GAME DRAWING GOES HERE 
 
+        //change background color according to the sliders
         // g.setColor(new Color(angle.getValue(), power.getValue(), 255));
 
+        //fill screen
         g.fillRect(0, 0, WIDTH, HEIGHT);
 
         //code for loading backround image
         //g.drawImage(bg, 0, 0, WIDTH, HEIGHT, null);
 
 
-        //tank
+        // create tank
         g.setColor(Color.red);
         g.fillRect(tank.x, tank.y, tank.width, tank.height);
 
-
-
         //missile when in motion
         g.setColor(Color.gray);
-        g.fillRect(smissile.x, smissile.y, missile.width, missile.height);
-
-        //ghost missile
-        //g.setColor(Color.gray);
-        // g.fillRect(tank.x + 10, tank.y, missile.width, missile.height);
+        g.fillRect(missile.x, missile.y, missile.width, missile.height);
+        
+        //create enemy tank
+        g.setColor(Color.yellow);
+        g.fillRect(eTank.x, eTank.y, eTank.width, eTank.height);
+        //enemy missile
+        g.setColor(Color.gray);
+        g.fillRect(eTank.x, eTank.y, eMissile.width, eMissile.height);
 
         // GAME DRAWING ENDS HERE
     }
@@ -162,23 +180,83 @@ public class tankGameRough extends JComponent implements KeyListener {
      }
      */
     // The main game loop
-    // In here is where all the logic for my game will go
+    
     public void reset() {
-        //reset the bird
-        smissile.x = tank.x + 10;
-        smissile.y = tank.y;
-        dy = 0;
-        dx = 0;
-        ready = true;
-        dead = false;
+                //reset the game
+                missile.x = tank.x + 10;
+                missile.y = tank.y;
+                eMissile.x = eTank.x;
+                eMissile.y = eTank.y;
+                dy = 0;
+                dx = 0;
+                ready = true;
+                eLaunch = false;
+                dead = false;
     }
+    public void player(){
+        if(missile.y < 590){
+        //if the player is not dead, and the ready button is pressed
+            if (!dead && !ready) {
+                //get the missile to fall
+                //apply gravity
+                dy = (dy - gravity);
+                //apply change in y to the missile
+                missile.y += (int) -dy;
+                
 
+                //apply changes in x to the missile
+                missile.x += (int) -dx;
+               
+            }
+            //convert fuel into a string
+            fuelS = Integer.toString(fuel);
+            //update textbox
+            fuelD.setText(fuelS);
+            
+            //convert the power levels into a string
+            powerS = Integer.toString(power.getValue());
+            //update text box
+            powerD.setText(powerS);
+            
+            //convert the angle value into a string
+            angleS = Integer.toString(angle.getValue());
+            //update textboxes
+            angleD.setText(angleS);
+    }
+    }
+    
+    public void enemy(int randAngle,int randPower){
+                        
+        for(int i=0; i<1; i++){
+                        //multiply the sin of the angle by 2x the power slider
+                        dy = (Math.sin(Math.toRadians(randAngle)) * 1) * (2 * randPower);
+                        
+                        //multiply the cos of the angle by 2x the power slider
+                        dx = (Math.cos(Math.toRadians(randAngle)) * 1) * (2 * randPower);
+                        }
+        //if the player is not dead, and the ready button is pressed
+            if (!dead && !ready) {
+                //get the missile to fall
+                //apply gravity
+                dy = (dy - gravity);
+                //apply change in y to the missile
+                eMissile.y += (int) -dy;
+                
+
+                //apply changes in x to the missile
+               eMissile.x += (int) -dx;
+               
+            }
+    }
+            
+// In here is where all the logic for my game will go
     public void run() {
 
-        //convert int fuel into a string
-       fuelS = Integer.toString(fuel);
-       fuelD.setEditable(false);
-       
+        //set the textboxes as uneditable
+        fuelD.setEditable(false);
+        angleD.setEditable(false);
+        powerD.setEditable(false);
+
         // Used to keep track of time used to draw and update the game
         // This is used to limit the framerate later on
         long startTime;
@@ -193,8 +271,8 @@ public class tankGameRough extends JComponent implements KeyListener {
 
             // all your game rules and move is done in here
             // GAME LOGIC STARTS HERE 
-            
-            
+
+
             //get tank to move
             //stop if the slider is at position 1 or if fuel is 0
             if (movement.getValue() == 1 || fuel == 0) {
@@ -203,7 +281,7 @@ public class tankGameRough extends JComponent implements KeyListener {
             if (movement.getValue() > 1 && fuel > 0) {
                 //add 1 to x
                 tank.x = tank.x + 1;
-                smissile.x = smissile.x + 1;
+                missile.x = missile.x + 1;
                 //subtract 1 from fuel
                 fuel = fuel - 1;
             }
@@ -211,54 +289,48 @@ public class tankGameRough extends JComponent implements KeyListener {
             if (movement.getValue() < 1 && fuel > 0) {
                 //subtract from x
                 tank.x = tank.x - 1;
-                smissile.x = smissile.x - 1;
+                missile.x = missile.x - 1;
                 //subtract from fuel
                 fuel = fuel - 1;
             }
 
-
+            //when button is clicked
             readyB.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     if (ready) {
+                        //set ready to false
                         ready = false;
-                        //get the value of the power slider
-                        //double missileVelocity = -(power.getValue());
-                        //set dy to be equal to missile velocity
-                        dy = (Math.sin(Math.toRadians(angle.getValue())) * 1) * (2 * power.getValue());
-                       
-                        dx = (Math.cos(Math.toRadians(angle.getValue())) * 1) *  (2 * power.getValue());
                         
+                        //multiply the sin of the angle by 2x the power slider
+                        dy = (Math.sin(Math.toRadians(angle.getValue())) * 1) * (2 * power.getValue());
+                        
+                        //multiply the cos of the angle by 2x the power slider
+                        dx = (Math.cos(Math.toRadians(angle.getValue())) * 1) * (2 * power.getValue());
+
                     }
                 }
             });
-
-
-            //if the player is not dead, and the ready button is pressed
-            if (!dead && !ready) {
-                //get the missile to fall
-                //apply gravity
-                dy = (dy - gravity);
-                //apply change in y to the bird
-                smissile.y +=(int)-dy;
-               // System.out.println("y = " + smissile.y);
-
-                
-                smissile.x +=(int)-dx ;  
-                //System.out.println("x = " + smissile.x);
-            }
-            fuelS = Integer.toString(fuel);
-            fuelD.setText(fuelS);
+            
+            player();
+            
+            
+            
+            
             //test if the missile hit the ground
-            if (smissile.y > 590) {
+            if (!ready && missile.y > 590 && !eDead) {
+                if(!eLaunch){
+                //generate a random number for the power
+                int randAngle = (int)(Math.random()*(90 - 1 + 1))+ 1;
+                int randPower = (int)(Math.random()*(22 - 1 + 1))+ 1;
+                eLaunch = true;
+                }
+                enemy(randAngle,randPower);
                 
-                smissile.x = tank.x + 10;
-                smissile.y = tank.y;
-                dy = 0;
-                dx = 0;
-                ready = true;
-                dead = false;
-                //reset();
+            }
+            
+            if (eMissile.y > 590){
+                reset();
             }
             // GAME LOGIC ENDS HERE 
 
