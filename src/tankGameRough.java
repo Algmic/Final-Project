@@ -429,14 +429,14 @@ public class tankGameRough extends JComponent implements KeyListener {
             
             
             if (eMissile.y > 441){
-                /*
+                
                 if (eMissile.x < tank.x){
-                    Lamount = eMissile.x;
+                    Lamount = Lamount + 1;
                 }
                 else if (eMissile.x > tank.x){
-                    Gamount = eMissile.x;
+                    Gamount = Gamount - 1;
                 }
-                */
+                
                 reset();
             }
             // GAME LOGIC ENDS HERE 
