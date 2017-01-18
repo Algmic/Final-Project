@@ -1,4 +1,5 @@
 
+import com.sun.xml.internal.ws.api.streaming.XMLStreamReaderFactory.Default;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -52,6 +53,9 @@ public class tankGameRough extends JComponent implements KeyListener {
     //create a slider to determine power
     JSlider power = new JSlider(1, 22, 11);
     
+    //create hitboxes
+    Rectangle[] ground = new Rectangle[1];
+    
     //create variables for enemy targeting
     int randAngle = 0;
     int randPower = 0;
@@ -74,10 +78,12 @@ public class tankGameRough extends JComponent implements KeyListener {
     //boolean to toggle between calculating enemy trajectory and not
     boolean eTraj = true;
     
-    boolean lv1 = false;
+    boolean lv1 = true;
     boolean lv2 = false;
     boolean lv3 = false;
     
+    //create ground colour
+    Color groundColour = new Color (255,180,0);
     
     //create a variable to store fuel
     int fuel = 250;
@@ -94,7 +100,10 @@ public class tankGameRough extends JComponent implements KeyListener {
     //create a textfield to display power levels (which are over 9000)
     JTextField powerD = new JTextField(powerS);
     //code for loading backround image
-    // BufferedImage bg = loadImage("stock_backround.jpg");
+    BufferedImage bg1 = loadImage("Default.jpg");
+    BufferedImage bg2 = loadImage("Level2.jpg");
+    
+    
     int x = 100;
     int y = 100;
 
@@ -145,14 +154,20 @@ public class tankGameRough extends JComponent implements KeyListener {
         // GAME DRAWING GOES HERE 
 
         //change background color according to the sliders
-        // g.setColor(new Color(angle.getValue(), power.getValue(), 255));
+        //g.setColor(new Color(angle.getValue(), power.getValue(), 255));
 
         //fill screen
         g.fillRect(0, 0, WIDTH, HEIGHT);
 
+        if(lv1){
         //code for loading backround image
-        //g.drawImage(bg, 0, 0, WIDTH, HEIGHT, null);
-
+        g.drawImage(bg1, 0, 0, WIDTH, HEIGHT, null);
+        }
+        if(lv2){
+        //code for loading backround image
+        g.drawImage(bg2, 0, 0, WIDTH, HEIGHT, null);
+        }
+        
 
         // create tank
         g.setColor(Color.red);
@@ -174,8 +189,7 @@ public class tankGameRough extends JComponent implements KeyListener {
 
     //code for loading backround image
     
-    if(lv1 == true){
-    }
+    
      public BufferedImage loadImage(String filename){
      BufferedImage img = null;
      try{
@@ -282,7 +296,8 @@ public class tankGameRough extends JComponent implements KeyListener {
             // all your game rules and move is done in here
             // GAME LOGIC STARTS HERE 
 
-
+           
+            
             //get tank to move
             //stop if the slider is at position 1 or if fuel is 0
             if (movement.getValue() == 1 || fuel == 0) {
@@ -304,6 +319,10 @@ public class tankGameRough extends JComponent implements KeyListener {
                 fuel = fuel - 1;
             }
 
+            //apply gravity to tanks
+            tank.y = tank.y + gravity;
+            eTank.y = eTank.y + gravity;
+            
             //when button is clicked
             readyB.addActionListener(new ActionListener() {
                 @Override
@@ -322,10 +341,47 @@ public class tankGameRough extends JComponent implements KeyListener {
                 }
             });
             
+            //code to prevent tank falling through ground
+            //if color tank is currently on matches ground colour, move it back 1 pixel
+            if (bg1.getRGB((int) tank.x + 20, (int) tank.y + 20) == groundColour.getRGB() 
+               || bg1.getRGB((int) tank.x + 20, (int) tank.y - 20) == groundColour.getRGB()
+               || bg1.getRGB((int) tank.x - 20, (int) tank.y + 20) == groundColour.getRGB()
+               || bg1.getRGB((int) tank.x + 20, (int) tank.y - 20) == groundColour.getRGB()){
+                tank.y = tank.y - 1;
+               
+           }
+            //code to prevent tank falling through ground
+            //if color tank is currently on matches ground colour, move it back 1 pixel
+            if (bg1.getRGB((int) eTank.x + 20, (int) eTank.y + 20) == groundColour.getRGB() 
+               || bg1.getRGB((int) eTank.x + 20, (int) eTank.y - 20) == groundColour.getRGB()
+               || bg1.getRGB((int) eTank.x - 20, (int) eTank.y + 20) == groundColour.getRGB()
+               || bg1.getRGB((int) eTank.x + 20, (int) eTank.y - 20) == groundColour.getRGB())
+            {
+                eTank.y = eTank.y - 1;
+             }
+            
+            //code to prevent missile falling through ground
+            //if color tank is currently on matches ground colour, move it back 1 pixel
+            if (bg1.getRGB((int) missile.x + 10, (int) missile.y + 10) == groundColour.getRGB() 
+               || bg1.getRGB((int) missile.x + 10, (int) missile.y - 10) == groundColour.getRGB()
+               || bg1.getRGB((int) missile.x - 10, (int) missile.y + 10) == groundColour.getRGB()
+               || bg1.getRGB((int) missile.x + 10, (int) missile.y - 10) == groundColour.getRGB()){
+                tank.y = tank.y - 1;
+               
+           }
+            //code to prevent missile falling through ground
+            //if color tank is currently on matches ground colour, move it back 1 pixel
+            if (bg1.getRGB((int) eMissile.x + 10, (int) eMissile.y + 10) == groundColour.getRGB() 
+               || bg1.getRGB((int) eMissile.x + 10, (int) eMissile.y - 10) == groundColour.getRGB()
+               || bg1.getRGB((int) eMissile.x- 10, (int) eMissile.y + 10) == groundColour.getRGB()
+               || bg1.getRGB((int) eMissile.x + 10, (int) eMissile.y - 10) == groundColour.getRGB())
+            {
+                eTank.y = eTank.y - 1;
+                
+             }
+            
+            
             player();
-            
-            
-            
             
             //test if the missile hit the ground
             if (!ready && missile.y > 590 && !eDead) {
@@ -338,6 +394,15 @@ public class tankGameRough extends JComponent implements KeyListener {
                 enemy(randAngle,randPower);
                 
             }
+            
+           
+            
+            
+            
+            
+            
+            
+            
             
             if (eMissile.y > 590){
                 reset();
@@ -414,16 +479,18 @@ public class tankGameRough extends JComponent implements KeyListener {
             lv2 = false;
             lv3 = false;        
         }
+        
+        /*
         if (key == KeyEvent.VK_2) {
             lv1 = false;
             lv2 = true;
             lv3 = false;  
         }
-        if (key == KeyEvent.VK_3) {
+       /* if (key == KeyEvent.VK_3) {
             lv1 = false;
             lv2 = false;
             lv3 = true;  
-        }
+        }*/
 
     }
 
