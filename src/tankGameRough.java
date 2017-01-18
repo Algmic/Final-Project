@@ -38,11 +38,11 @@ public class tankGameRough extends JComponent implements KeyListener {
     //create boolean ready
     boolean ready = true;
     //create tank
-    Rectangle tank = new Rectangle(100, 400, 20, 20);
+    Rectangle tank = new Rectangle(100, 421, 20, 20);
     
     //create shadow version of tank and missile
     //create tank
-    Rectangle eTank = new Rectangle(700, 400, 20, 20);
+    Rectangle eTank = new Rectangle(700, 421, 20, 20);
     //create projectile
     Rectangle missile = new Rectangle(tank.x + 10, tank.y, 10, 10);
     //create shadow projectile
@@ -53,8 +53,8 @@ public class tankGameRough extends JComponent implements KeyListener {
     //create a slider to determine power
     JSlider power = new JSlider(1, 22, 11);
     
-    //create hitboxes
-    Rectangle[] ground = new Rectangle[1];
+    //create ground
+    Rectangle ground = new Rectangle(0, 441, 800, 600);
     
     //create variables for enemy targeting
     int randAngle = 0;
@@ -69,6 +69,15 @@ public class tankGameRough extends JComponent implements KeyListener {
     double dy = 0;
     //change in x
     double dx = 0;
+    
+    // enemy difference in y
+    double edy = 0;
+    // enemy change in x
+    double edx = 0;
+    
+    //variables to use when generating random power levels
+    int Lamount = 1;
+    int Gamount = 22;
     //create variable to test if character is dead or not
     boolean dead = false;
     //create boolean to test if enemy is dead
@@ -77,6 +86,11 @@ public class tankGameRough extends JComponent implements KeyListener {
     boolean eLaunch = false;
     //boolean to toggle between calculating enemy trajectory and not
     boolean eTraj = true;
+    
+    
+    boolean missileGround = false;
+    boolean eMissileGround = false;
+    
     
     boolean lv1 = true;
     boolean lv2 = false;
@@ -211,13 +225,17 @@ public class tankGameRough extends JComponent implements KeyListener {
                 eMissile.y = eTank.y;
                 dy = 0;
                 dx = 0;
+                edy = 0;
+                edx = 0;
                 ready = true;
                 eLaunch = false;
                 dead = false;
                 eTraj = true;
+               // eMissileGround = false;
+                missileGround = false;
     }
     public void player(){
-        if(missile.y < 590){
+        
         //if the player is not dead, and the ready button is pressed
             if (!dead && !ready) {
                 //get the missile to fall
@@ -245,32 +263,61 @@ public class tankGameRough extends JComponent implements KeyListener {
             angleS = Integer.toString(angle.getValue());
             //update textboxes
             angleD.setText(angleS);
+            
+            if (missile.intersects(ground)){
+                    missile.y = 441;
+                    missileGround = true;
+                }
+            
+            /*
+            //code to prevent missile falling through ground
+            //if color tank is currently on matches ground colour, move it back 1 pixel
+            if (bg1.getRGB((int) missile.x + 10, (int) missile.y + 10) == groundColour.getRGB() 
+               || bg1.getRGB((int) missile.x + 10, (int) missile.y - 10) == groundColour.getRGB()
+               || bg1.getRGB((int) missile.x - 10, (int) missile.y + 10) == groundColour.getRGB()
+               || bg1.getRGB((int) missile.x + 10, (int) missile.y - 10) == groundColour.getRGB()){
+                missile.y = 441;
+               missileGround = true;
+           }*/
     }
-    }
+        
     
     public void enemy(int randAngle,int randPower){
-        
         if(eTraj){
         //multiply the sin of the angle by 2x the power slider
-        dy = (Math.sin(Math.toRadians(randAngle)) * 1) * (2 * randPower);
+        edy = (Math.sin(Math.toRadians(randAngle)) * 1) * (2 * randPower);
         
         //multiply the cos of the angle by 2x the power slider
-        dx = (Math.cos(Math.toRadians(randAngle)) * 1) * (2 * randPower);
+        edx = (Math.cos(Math.toRadians(randAngle)) * 1) * (2 * randPower);
         eTraj = false;
         }
         //if the player is not dead, and the ready button is pressed
             if (!eDead && !ready) {
                 //get the missile to fall
                 //apply gravity
-                dy = (dy - gravity);
+                edy = (dy - gravity);
                 //apply change in y to the missile
-                eMissile.y += (int) -dy;
+                eMissile.y += (int) -edy;
                 
 
                 //apply changes in x to the missile
-               eMissile.x += (int) -dx;
+               eMissile.x += (int) -edx;
                
             }
+            /*
+            //code to prevent missile falling through ground
+            //if color tank is currently on matches ground colour, move it back 1 pixel
+            if (bg1.getRGB((int) eMissile.x + 10, (int) eMissile.y + 10) == groundColour.getRGB() 
+               || bg1.getRGB((int) eMissile.x + 10, (int) eMissile.y - 10) == groundColour.getRGB()
+               || bg1.getRGB((int) eMissile.x- 10, (int) eMissile.y + 10) == groundColour.getRGB()
+               || bg1.getRGB((int) eMissile.x + 10, (int) eMissile.y - 10) == groundColour.getRGB())
+            {
+                eMissile.y = 441;
+                eMissileGround = true;
+                */
+            //}
+        
+        
     }
             
 // In here is where all the logic for my game will go
@@ -318,11 +365,11 @@ public class tankGameRough extends JComponent implements KeyListener {
                 //subtract from fuel
                 fuel = fuel - 1;
             }
-
+            /*
             //apply gravity to tanks
             tank.y = tank.y + gravity;
             eTank.y = eTank.y + gravity;
-            
+            */
             //when button is clicked
             readyB.addActionListener(new ActionListener() {
                 @Override
@@ -340,7 +387,7 @@ public class tankGameRough extends JComponent implements KeyListener {
                     }
                 }
             });
-            
+           /* 
             //code to prevent tank falling through ground
             //if color tank is currently on matches ground colour, move it back 1 pixel
             if (bg1.getRGB((int) tank.x + 20, (int) tank.y + 20) == groundColour.getRGB() 
@@ -359,32 +406,17 @@ public class tankGameRough extends JComponent implements KeyListener {
             {
                 eTank.y = eTank.y - 1;
              }
-            
-            //code to prevent missile falling through ground
-            //if color tank is currently on matches ground colour, move it back 1 pixel
-            if (bg1.getRGB((int) missile.x + 10, (int) missile.y + 10) == groundColour.getRGB() 
-               || bg1.getRGB((int) missile.x + 10, (int) missile.y - 10) == groundColour.getRGB()
-               || bg1.getRGB((int) missile.x - 10, (int) missile.y + 10) == groundColour.getRGB()
-               || bg1.getRGB((int) missile.x + 10, (int) missile.y - 10) == groundColour.getRGB()){
-                tank.y = tank.y - 1;
-               
-           }
-            //code to prevent missile falling through ground
-            //if color tank is currently on matches ground colour, move it back 1 pixel
-            if (bg1.getRGB((int) eMissile.x + 10, (int) eMissile.y + 10) == groundColour.getRGB() 
-               || bg1.getRGB((int) eMissile.x + 10, (int) eMissile.y - 10) == groundColour.getRGB()
-               || bg1.getRGB((int) eMissile.x- 10, (int) eMissile.y + 10) == groundColour.getRGB()
-               || bg1.getRGB((int) eMissile.x + 10, (int) eMissile.y - 10) == groundColour.getRGB())
-            {
-                eTank.y = eTank.y - 1;
-                
-             }
+            */
             
             
+            ground.setBounds(-200,441, 1200, 200);
+            
+            if(!missileGround){
             player();
+            }
             
             //test if the missile hit the ground
-            if (!ready && missile.y > 590 && !eDead) {
+            if (!ready && missileGround && !eDead) {
                 if(!eLaunch){
                 //generate a random number for the power
                 randAngle = (int)(Math.random()*(90 - 1 + 1))+ 1;
@@ -395,16 +427,16 @@ public class tankGameRough extends JComponent implements KeyListener {
                 
             }
             
-           
             
-            
-            
-            
-            
-            
-            
-            
-            if (eMissile.y > 590){
+            if (eMissile.y > 441){
+                /*
+                if (eMissile.x < tank.x){
+                    Lamount = eMissile.x;
+                }
+                else if (eMissile.x > tank.x){
+                    Gamount = eMissile.x;
+                }
+                */
                 reset();
             }
             // GAME LOGIC ENDS HERE 
