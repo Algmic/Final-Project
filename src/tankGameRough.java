@@ -2,6 +2,7 @@
 import com.sun.xml.internal.ws.api.streaming.XMLStreamReaderFactory.Default;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.Rectangle;
@@ -33,7 +34,7 @@ public class tankGameRough extends JComponent implements KeyListener {
     static final int HEIGHT = 600;
     // sets the framerate and delay for our game
     // you just need to select an approproate framerate
-    long desiredFPS = 60;
+    long desiredFPS = 75;
     long desiredTime = (1000) / desiredFPS;
     //create boolean ready
     boolean ready = true;
@@ -44,10 +45,10 @@ public class tankGameRough extends JComponent implements KeyListener {
     //create tank
     Rectangle eTank = new Rectangle(700, 421, 20, 20);
     //create projectile
-    Rectangle missile = new Rectangle(tank.x + 10, tank.y, 10, 10);
+    Rectangle missile = new Rectangle(tank.x + 10, tank.y - 10, 10, 10);
     //create shadow projectile
     //create ghost rectangle
-    Rectangle eMissile = new Rectangle(eTank.x, eTank.y, 10, 10);
+    Rectangle eMissile = new Rectangle(eTank.x, eTank.y -10 , 10, 10);
     //create a slider to determine angle
     JSlider angle = new JSlider(0, 180, 90);
     //create a slider to determine power
@@ -128,6 +129,8 @@ public class tankGameRough extends JComponent implements KeyListener {
     String eHealthS = Integer.toString(eHealth);
     //create a textfield to display angle
     JTextField eHealthD = new JTextField(eHealthS);
+    //display victory screen
+    Font victoryFont = new Font("Arial",Font.BOLD, 60);
     
     
     
@@ -224,7 +227,19 @@ public class tankGameRough extends JComponent implements KeyListener {
         //enemy missile
         g.setColor(Color.gray);
         g.fillRect(eMissile.x, eMissile.y, eMissile.width, eMissile.height);
-
+        
+        if(health <= 0){
+        //score
+        g.setColor(Color.BLUE);
+        g.setFont(victoryFont);
+        g.drawString("YOU LOSE", WIDTH/2, 300);
+        } 
+        if(eHealth <= 0){
+        //score
+        g.setColor(Color.WHITE);
+        g.setFont(victoryFont);
+        g.drawString("YOU WIN", WIDTH/2, 300);
+        } 
         // GAME DRAWING ENDS HERE
     }
 
@@ -247,9 +262,9 @@ public class tankGameRough extends JComponent implements KeyListener {
     public void reset() {
                 //reset the game
                 missile.x = tank.x + 10;
-                missile.y = tank.y;
+                missile.y = tank.y - 10;
                 eMissile.x = eTank.x;
-                eMissile.y = eTank.y;
+                eMissile.y = eTank.y - 10;
                 dy = 0;
                 dx = 0;
                 edy = 0;
@@ -357,18 +372,14 @@ public class tankGameRough extends JComponent implements KeyListener {
     }
     
     public void gameReset(){
-        if(health == 0){
-            System.out.println("YOU LOSE");
-        }
-        else if (eHealth == 0){
-            System.out.println("You win");
-        }
-        if(resetGame){ 
+        if(resetGame == true){ 
          //reset the game
+                tank.x = 100;
+                eTank.x = 700;
                 missile.x = tank.x + 10;
-                missile.y = tank.y;
+                missile.y = tank.y - 10;
                 eMissile.x = eTank.x;
-                eMissile.y = eTank.y;
+                eMissile.y = eTank.y - 10;
                 dy = 0;
                 dx = 0;
                 edy = 0;
@@ -382,12 +393,14 @@ public class tankGameRough extends JComponent implements KeyListener {
                 eHealth = 100;
                 fuel = 250;
                 resetGame = false;
+                eDead = false;
+                dead = false;
     }
     }        
 // In here is where all the logic for my game will go
     public void run() {
         
-        gameReset();
+        
         
         //set the textboxes as uneditable
         fuelD.setEditable(false);
@@ -410,9 +423,14 @@ public class tankGameRough extends JComponent implements KeyListener {
 
             // all your game rules and move is done in here
             // GAME LOGIC STARTS HERE 
-                ground.setBounds(-1000,441, 3200, 200);
-           
+            gameReset();
             
+            if(!dead && ! eDead){
+                ground.setBounds(-1000,441, 3200, 200);
+                eTank.setBounds(eTank.x,eTank.y, 20, 20);
+                tank.setBounds(tank.x,tank.y, 20, 20);
+                missile.setBounds(missile.x,missile.y, 10, 10);
+                eMissile.setBounds(eMissile.x,eMissile.y, 10, 10);
             //get tank to move
             //stop if the slider is at position 1 or if fuel is 0
             if (movement.getValue() == 1 || fuel == 0) {
@@ -422,7 +440,7 @@ public class tankGameRough extends JComponent implements KeyListener {
                 //add 1 to x
                 tank.x = tank.x + 1;
                 missile.x = missile.x + 1;
-                tank.setBounds(tank.x,tank.y, 20, 20);
+                
                 //subtract 1 from fuel
                 fuel = fuel - 1;
             }
@@ -431,7 +449,7 @@ public class tankGameRough extends JComponent implements KeyListener {
                 //subtract from x
                 tank.x = tank.x - 1;
                 missile.x = missile.x - 1;
-                eTank.setBounds(eTank.x,eTank.y, 20, 20);
+                
                 //subtract from fuel
                 fuel = fuel - 1;
             }
@@ -500,7 +518,13 @@ public class tankGameRough extends JComponent implements KeyListener {
             if(missile.intersects(eTank)){
                eHealth = eHealth - 20; 
             }
-            else if(eMissile.intersects(tank)){
+            if(eMissile.intersects(tank)){
+               health = health - 20; 
+            }
+            if(eMissile.intersects(eTank)){
+               eHealth = eHealth - 20; 
+            }
+            if(missile.intersects(tank)){
                health = health - 20; 
             }
             
@@ -524,6 +548,7 @@ public class tankGameRough extends JComponent implements KeyListener {
                 }
                 
                 reset();
+            }
             }
             // GAME LOGIC ENDS HERE 
 
@@ -586,6 +611,7 @@ public class tankGameRough extends JComponent implements KeyListener {
         if (key == KeyEvent.VK_D) {
             movement.setValue(2);
         }
+        
         if (key == KeyEvent.VK_LEFT) {
             movement.setValue(0);
         }
@@ -629,6 +655,9 @@ public class tankGameRough extends JComponent implements KeyListener {
         }
         if (key == KeyEvent.VK_RIGHT) {
             movement.setValue(1);
+        }
+        if (key == KeyEvent.VK_SPACE) {
+            resetGame = false;
         }
 
 
