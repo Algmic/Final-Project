@@ -58,7 +58,7 @@ public class tankGameRough extends JComponent implements KeyListener {
     Rectangle ground = new Rectangle(0, 441, 800, 600);
     
     //create the wall
-    Rectangle wall = new Rectangle(300, 130, 180 , 312);
+    Rectangle wall = new Rectangle(300, 130, 180 , 400);
 
     //create variables for enemy targeting
     int randAngle = 0;
@@ -381,33 +381,40 @@ public class tankGameRough extends JComponent implements KeyListener {
     public void gameReset(){
         if(resetGame == true){ 
          //reset the game
+            //reset x coordinate of tanks
                 tank.x = 100;
                 eTank.x = 700;
+                //reset missiles
                 missile.x = tank.x + 10;
                 missile.y = tank.y - 10;
                 eMissile.x = eTank.x;
                 eMissile.y = eTank.y - 10;
+                //reset directional momentum
                 dy = 0;
                 dx = 0;
                 edy = 0;
                 edx = 0;
+                //reset ready buttons
                 ready = true;
                 eLaunch = false;
                 eTraj = true;
                // eMissileGround = false;
+                //reset missileGround
                 missileGround = false;
+                //reset health
                 health = 100;
                 eHealth = 100;
+                //reset fuel
                 fuel = 250;
+                //reset game
                 resetGame = false;
+                //reset deaths
                 eDead = false;
                 dead = false;
     }
     }        
 // In here is where all the logic for my game will go
     public void run() {
-        
-        
         
         //set the textboxes as uneditable
         fuelD.setEditable(false);
@@ -429,16 +436,25 @@ public class tankGameRough extends JComponent implements KeyListener {
             startTime = System.currentTimeMillis();
 
             // all your game rules and move is done in here
-            // GAME LOGIC STARTS HERE 
+            // GAME LOGIC STARTS HERE \
+            //reset full game
             gameReset();
             
+            // dead and eDead are false
             if(!dead && ! eDead){
+                //set bounds of the ground
                 ground.setBounds(-1000,441, 3200, 200);
+                //set bounds of the enemy tank
                 eTank.setBounds(eTank.x,eTank.y, 20, 20);
+                //set bounds of the tank
                 tank.setBounds(tank.x,tank.y, 20, 20);
+                //set bounds of the missile
                 missile.setBounds(missile.x,missile.y, 10, 10);
+                //set bounds of the enemy missile
                 eMissile.setBounds(eMissile.x,eMissile.y, 10, 10);
+                //if lv3 is true
                 if(lv3){
+                    //set bounds of the wall
                   wall.setBounds(wall.x,wall.y, wall.width, wall.height);  
                 }
             //get tank to move
@@ -463,11 +479,15 @@ public class tankGameRough extends JComponent implements KeyListener {
                 //subtract from fuel
                 fuel = fuel - 1;
             }
+            
+            
             /*
             //apply gravity to tanks
             tank.y = tank.y + gravity;
             eTank.y = eTank.y + gravity;
             */
+            
+            
             //when button is clicked
             readyB.addActionListener(new ActionListener() {
                 @Override
@@ -485,7 +505,7 @@ public class tankGameRough extends JComponent implements KeyListener {
                     }
                 }
             });
-
+            //if the missile has not hit the ground, activate the player function
             if(!missileGround){
             player();
             }
@@ -496,44 +516,80 @@ public class tankGameRough extends JComponent implements KeyListener {
                 //generate a random number for the power
                 randAngle = (int)(Math.random()*(90 - 0 + 0))+ 0;
                 randPower = (int)(Math.random()*(Gamount - Lamount + Lamount))+ Lamount;
+                //set eLaunch equal to true
                 eLaunch = true;
                 }
+                //pass randAngle and randPower into the enemy function
                 enemy(randAngle,randPower);
                 
             }
-            
+            //if level 3 is true
+            if(lv3){ 
+            //if missile intersects with the wall
+            if(missile.intersects(wall)){
+                //set horizontal momententum equal to zero
+               dx=0;
+            }
+            //if enemy missile intersects with the wall
+            if(eMissile.intersects(wall)){
+                //set enemy horizontal momentum down to 0
+               edx=0;
+            }
+            // if the tank intersects with the wall
+            if(tank.intersects(wall)){
+                //set tank back a pixel
+                tank.x = tank.x -1;
+            }
+            }
+            //if missile hits enemy tank
             if(missile.intersects(eTank)){
+                //subtract 20 from enemy health
                eHealth = eHealth - 20; 
             }
+            //if enemy missile hits player tank
             if(eMissile.intersects(tank)){
+                //subtract 20 from player health
                health = health - 20; 
             }
+            //if enemy missile hits enemy tank
             if(eMissile.intersects(eTank)){
+                //subtract 20 from enemy health
                eHealth = eHealth - 20; 
             }
+            //if missile hits player tank
             if(missile.intersects(tank)){
+                //subtract 20 from health
                health = health - 20; 
             }
             
-            
+            //if the enemy missile passes y co-ordiante 441 (hits ground)
             if (eMissile.y > 441){
-                
+                //if enemy missile x co-ordinate is greater then tank.x
                 if (eMissile.x > tank.x){
+                    //add 1 to Lamount
                     Lamount = Lamount + 1;
                 }
+                //if enemy missile x co ordiante is less then tank.x
                 else if (eMissile.x < tank.x){
+                    //subtract 1 from Gamount
                     Gamount = Gamount - 1;
                 }
                 
+                //if health is equal to 0
                 if(health == 0){
+                    //set dead equal to true
                     dead = true;
+                    //reset full game
                     gameReset();
                 }
+                //if enemy health is equal to 0
                 else if(eHealth == 0){
+                    //set eDead equal to true
                     eDead = true;
+                    //reset full game
                     gameReset();
                 }
-                
+                //reset back to starting positions
                 reset();
             }
             }
@@ -591,25 +647,31 @@ public class tankGameRough extends JComponent implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
+        //set value of movement slider to 0 when A is pressed
         int key = e.getKeyCode();
         if (key == KeyEvent.VK_A) {
             movement.setValue(0);
         }
+        //set value of movement slider to 0 when D is pressed
         if (key == KeyEvent.VK_D) {
             movement.setValue(2);
         }
         
+        //set value of movement slider to 2 when left arrow is pressed
         if (key == KeyEvent.VK_LEFT) {
             movement.setValue(0);
         }
+        //set value of movement slider to 2 when right arrow is pressed
         if (key == KeyEvent.VK_RIGHT) {
             movement.setValue(2);
         }
+        //set lv1 equal to true if 1 is pressed
         if (key == KeyEvent.VK_1) {
             lv1 = true;
             lv2 = false;
             lv3 = false;        
         }
+        //set resetGame equal to true if space is pressed
         if (key == KeyEvent.VK_SPACE) {
             resetGame = true;
         }
@@ -620,6 +682,7 @@ public class tankGameRough extends JComponent implements KeyListener {
             lv3 = false;  
         }
          */
+        //set lv3 equal to true if 3 is pressed
         if (key == KeyEvent.VK_3) {
             lv2 = false;
             lv3 = true;  
@@ -629,20 +692,24 @@ public class tankGameRough extends JComponent implements KeyListener {
 
     @Override
     public void keyReleased(KeyEvent e) {
+        //set movement to 1 if A is released
         int key = e.getKeyCode();
         if (key == KeyEvent.VK_A) {
             movement.setValue(1);
         }
+        //set movement to 1 if D is released
         if (key == KeyEvent.VK_D) {
             movement.setValue(1);
         }
-
+        //set movement to 1 if left arrow is released
         if (key == KeyEvent.VK_LEFT) {
             movement.setValue(1);
         }
+        //set movement to 1 if right arrow is released
         if (key == KeyEvent.VK_RIGHT) {
             movement.setValue(1);
         }
+        //set resetGame to false if space is released
         if (key == KeyEvent.VK_SPACE) {
             resetGame = false;
         }
