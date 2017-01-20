@@ -34,7 +34,7 @@ public class tankGameRough extends JComponent implements KeyListener {
     static final int HEIGHT = 600;
     // sets the framerate and delay for our game
     // you just need to select an approproate framerate
-    long desiredFPS = 75;
+    long desiredFPS = 60;
     long desiredTime = (1000) / desiredFPS;
     //create boolean ready
     boolean ready = true;
@@ -57,6 +57,9 @@ public class tankGameRough extends JComponent implements KeyListener {
     //create ground
     Rectangle ground = new Rectangle(0, 441, 800, 600);
     
+    //create the wall
+    Rectangle wall = new Rectangle(300, 130, 180 , 312);
+
     //create variables for enemy targeting
     int randAngle = 0;
     int randPower = 0;
@@ -110,35 +113,33 @@ public class tankGameRough extends JComponent implements KeyListener {
     //convert int fuel into a string
     String fuelS = Integer.toString(fuel);
     //create a textfield to display fuel levels
-    JTextField fuelD = new JTextField(fuelS);
+    JTextField fuelD = new JTextField("Fuel: " + fuelS);
     //convert the value of the angle slider into a string
     String angleS = Integer.toString(angle.getValue());
     //create a textfield to display angle
-    JTextField angleD = new JTextField(angleS);
+    JTextField angleD = new JTextField("Angle:" + angleS);
     //convert the value of the power slider into a string
     String powerS = Integer.toString(power.getValue());
     //create a textfield to display power levels (which are over 9000)
-    JTextField powerD = new JTextField(powerS);
+    JTextField powerD = new JTextField("Power: " + powerS);
     
     //convert the value of the angle slider into a string
     String healthS = Integer.toString(health);
     //create a textfield to display angle
-    JTextField healthD = new JTextField(healthS);
+    JTextField healthD = new JTextField("Health: " + healthS);
     
     //convert the value of the angle slider into a string
     String eHealthS = Integer.toString(eHealth);
     //create a textfield to display angle
-    JTextField eHealthD = new JTextField(eHealthS);
+    JTextField eHealthD = new JTextField("Enemy Health: " + eHealthS);
     //display victory screen
     Font victoryFont = new Font("Arial",Font.BOLD, 60);
     
     
-    
-    
     //code for loading backround image
     BufferedImage bg1 = loadImage("Default.jpg");
-    BufferedImage bg2 = loadImage("Level2.jpg");
-    
+    //BufferedImage bg2 = loadImage("Level2.jpg");
+   // BufferedImage bg3 = loadImage("Level-3.jpg");
     
     int x = 100;
     int y = 100;
@@ -183,8 +184,8 @@ public class tankGameRough extends JComponent implements KeyListener {
         fuelD.setBounds(650, 50, 100, 20);
         angleD.setBounds(0, 20, 100, 20);
         powerD.setBounds(200, 20, 100, 20);
-        eHealthD.setBounds(600, 100, 50, 20);
-        healthD.setBounds(000, 100, 50, 20);
+        eHealthD.setBounds(600, 100, 120, 20);
+        healthD.setBounds(000, 100, 80, 20);
     }
 
     // drawing of the game happens in here
@@ -207,11 +208,12 @@ public class tankGameRough extends JComponent implements KeyListener {
         //code for loading backround image
         g.drawImage(bg1, 0, 0, WIDTH, HEIGHT, null);
         }
-        if(lv2){
+        /*
+        if(lv3){
         //code for loading backround image
-        g.drawImage(bg2, 0, 0, WIDTH, HEIGHT, null);
+        g.drawImage(bg3, 0, 0, WIDTH, HEIGHT, null);
         }
-        
+        */
 
         // create tank
         g.setColor(Color.red);
@@ -228,6 +230,11 @@ public class tankGameRough extends JComponent implements KeyListener {
         g.setColor(Color.gray);
         g.fillRect(eMissile.x, eMissile.y, eMissile.width, eMissile.height);
         
+        if(lv3){
+        g.setColor(groundColour);
+        g.fillRect(wall.x, wall.y, wall.width, wall.height);
+        }   
+        
         if(health <= 0){
         //score
         g.setColor(Color.BLUE);
@@ -242,7 +249,7 @@ public class tankGameRough extends JComponent implements KeyListener {
         } 
         // GAME DRAWING ENDS HERE
     }
-
+    
     //code for loading backround image
     
     
@@ -293,27 +300,27 @@ public class tankGameRough extends JComponent implements KeyListener {
             //convert fuel into a string
             fuelS = Integer.toString(fuel);
             //update textbox
-            fuelD.setText(fuelS);
+            fuelD.setText("Fuel: " + fuelS);
             
             //convert the power levels into a string
             powerS = Integer.toString(power.getValue());
             //update text box
-            powerD.setText(powerS);
+            powerD.setText("Power: "+powerS);
             
             //convert the angle value into a string
             angleS = Integer.toString(angle.getValue());
             //update textboxes
-            angleD.setText(angleS);
+            angleD.setText("Angle: "+angleS);
             
             //convert fuel into a string
             healthS = Integer.toString(health);
             //update textbox
-            healthD.setText(healthS);
+            healthD.setText("Health: " + healthS);
             
             //convert fuel into a string
             eHealthS = Integer.toString(eHealth);
             //update textbox
-            eHealthD.setText(eHealthS);
+            eHealthD.setText("Enemy Health: " + eHealthS);
             
             if (missile.intersects(ground)){
                     missile.y = 441;
@@ -431,6 +438,9 @@ public class tankGameRough extends JComponent implements KeyListener {
                 tank.setBounds(tank.x,tank.y, 20, 20);
                 missile.setBounds(missile.x,missile.y, 10, 10);
                 eMissile.setBounds(eMissile.x,eMissile.y, 10, 10);
+                if(lv3){
+                  wall.setBounds(wall.x,wall.y, wall.width, wall.height);  
+                }
             //get tank to move
             //stop if the slider is at position 1 or if fuel is 0
             if (movement.getValue() == 1 || fuel == 0) {
@@ -475,30 +485,7 @@ public class tankGameRough extends JComponent implements KeyListener {
                     }
                 }
             });
-           /* 
-            //code to prevent tank falling through ground
-            //if color tank is currently on matches ground colour, move it back 1 pixel
-            if (bg1.getRGB((int) tank.x + 20, (int) tank.y + 20) == groundColour.getRGB() 
-               || bg1.getRGB((int) tank.x + 20, (int) tank.y - 20) == groundColour.getRGB()
-               || bg1.getRGB((int) tank.x - 20, (int) tank.y + 20) == groundColour.getRGB()
-               || bg1.getRGB((int) tank.x + 20, (int) tank.y - 20) == groundColour.getRGB()){
-                tank.y = tank.y - 1;
-               
-           }
-            //code to prevent tank falling through ground
-            //if color tank is currently on matches ground colour, move it back 1 pixel
-            if (bg1.getRGB((int) eTank.x + 20, (int) eTank.y + 20) == groundColour.getRGB() 
-               || bg1.getRGB((int) eTank.x + 20, (int) eTank.y - 20) == groundColour.getRGB()
-               || bg1.getRGB((int) eTank.x - 20, (int) eTank.y + 20) == groundColour.getRGB()
-               || bg1.getRGB((int) eTank.x + 20, (int) eTank.y - 20) == groundColour.getRGB())
-            {
-                eTank.y = eTank.y - 1;
-             }
-            */
-            
-            
-           
-            
+
             if(!missileGround){
             player();
             }
@@ -626,18 +613,18 @@ public class tankGameRough extends JComponent implements KeyListener {
         if (key == KeyEvent.VK_SPACE) {
             resetGame = true;
         }
-        /*
+       /*
         if (key == KeyEvent.VK_2) {
             lv1 = false;
             lv2 = true;
             lv3 = false;  
         }
-       /* if (key == KeyEvent.VK_3) {
-            lv1 = false;
+         */
+        if (key == KeyEvent.VK_3) {
             lv2 = false;
             lv3 = true;  
-        }*/
-
+        }
+        
     }
 
     @Override
