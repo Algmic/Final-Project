@@ -288,7 +288,7 @@ public class tankGameRough extends JComponent implements KeyListener {
     public void player() {
 
         //if the player is not dead, and the ready button is pressed
-        if ((!dead && !ready) && (nMissile || nukeC > 0)) {
+        if ((!dead && !ready) && (nMissile || nukeC != 0)) {
             //get the missile to fall
             //apply gravity
             dy = (dy - gravity);
@@ -329,11 +329,6 @@ public class tankGameRough extends JComponent implements KeyListener {
             missile.y = 441;
             //set missileGround to true
             missileGround = true;
-        }
-        //if nuke is used
-        if (nuke) {
-            //subtract 1 from nuke
-            nukeC--;
         }
 
         /*
@@ -589,7 +584,7 @@ public class tankGameRough extends JComponent implements KeyListener {
                         missile.x = tank.x + 10;
                         missile.y = tank.y - 10;
                     } //if nuke is true
-                    else if (nuke) {
+                    else if (nuke && nukeC > 0) {
                         //set enemy helath to 0
                         eHealth = 0;
                     }
@@ -629,7 +624,7 @@ public class tankGameRough extends JComponent implements KeyListener {
                         missile.x = tank.x + 10;
                         missile.y = tank.y - 10;
                     } //if nuke is true
-                    else if (nuke) {
+                    else if (nuke && nukeC > 0) {
                         //set health to 0
                         health = 0;
                     }
