@@ -62,6 +62,9 @@ public class tankGameRough extends JComponent implements KeyListener {
     //create a integer to store health
     int health = 100;
     int eHealth = 100;
+    //set counter for amount of nukes
+    int nukeC = 1;
+    int eNuke = 1;
     //create a slider to determine movement
     JSlider movement = new JSlider(0, 2, 1);
     //create a button to test if player is ready
@@ -81,6 +84,10 @@ public class tankGameRough extends JComponent implements KeyListener {
     int Gamount = 22;
     //create variable to test if character is dead or not
     boolean dead = false;
+    //create a boolean to test if normal missile is true
+    boolean nMissile = true;
+    //create a boolean to test if nuke missile is true
+    boolean nuke = false;
     //create boolean to test if enemy is dead
     boolean eDead = false;
     //enemy fired variable
@@ -96,12 +103,18 @@ public class tankGameRough extends JComponent implements KeyListener {
     boolean lv1 = true;
     boolean lv2 = false;
     boolean lv3 = false;
+    //allow the enemy to switch between weapons
+    boolean eNukes = false;
     //create ground colour
     Color groundColour = new Color(255, 180, 0);
     //create a variable to store fuel
     int fuel = 250;
+    //create a variable to store enemy randum numbers for nukes
+    int randNukes = 0;
     //convert int fuel into a string
     String fuelS = Integer.toString(fuel);
+    //display current weapon
+    JTextField weapon = new JTextField("Current Weapon: Missile");
     //create a textfield to display fuel levels
     JTextField fuelD = new JTextField("Fuel: " + fuelS);
     //convert the value of the angle slider into a string
@@ -149,6 +162,8 @@ public class tankGameRough extends JComponent implements KeyListener {
         this.add(healthD);
         //display health levels
         this.add(eHealthD);
+        //display health levels
+        this.add(weapon);
 
         //remove focus from the sliders, textboxes and buttons to allow key commands to work
         angle.setFocusable(false);
@@ -159,6 +174,7 @@ public class tankGameRough extends JComponent implements KeyListener {
         powerD.setFocusable(false);
         healthD.setFocusable(false);
         eHealthD.setFocusable(false);
+        weapon.setFocusable(false);
 
         //set the bounds for the sliders
         angle.setBounds(0, 0, 200, 20);
@@ -171,6 +187,7 @@ public class tankGameRough extends JComponent implements KeyListener {
         powerD.setBounds(200, 20, 100, 20);
         eHealthD.setBounds(685, 250, 120, 20);
         healthD.setBounds(000, 250, 80, 20);
+        weapon.setBounds(600, 00, 200, 20);
     }
 
     // drawing of the game happens in here
@@ -271,13 +288,12 @@ public class tankGameRough extends JComponent implements KeyListener {
     public void player() {
 
         //if the player is not dead, and the ready button is pressed
-        if (!dead && !ready) {
+        if ((!dead && !ready) && (nMissile || nukeC > 0)) {
             //get the missile to fall
             //apply gravity
             dy = (dy - gravity);
             //apply change in y to the missile
             missile.y += (int) -dy;
-
 
             //apply changes in x to the missile
             missile.x += (int) -dx;
@@ -308,9 +324,16 @@ public class tankGameRough extends JComponent implements KeyListener {
         //update textbox
         eHealthD.setText("Enemy Health: " + eHealthS);
 
+        //if missile hits the ground, set missily.y equal to ground height
         if (missile.intersects(ground)) {
             missile.y = 441;
+            //set missileGround to true
             missileGround = true;
+        }
+        //if nuke is used
+        if (nuke) {
+            //subtract 1 from nuke
+            nukeC--;
         }
 
         /*
@@ -326,6 +349,7 @@ public class tankGameRough extends JComponent implements KeyListener {
     }
 
     public void enemy(int randAngle, int randPower) {
+        //if eTrag is true
         if (eTraj) {
             //multiply the sin of the angle by 2x the power slider
             edy = (Math.sin(Math.toRadians(randAngle)) * 1) * (2 * randPower);
@@ -396,6 +420,8 @@ public class tankGameRough extends JComponent implements KeyListener {
             //reset deaths
             eDead = false;
             dead = false;
+            //reset weapons
+            nukeC = 1;
         }
     }
 // In here is where all the logic for my game will go
@@ -408,6 +434,9 @@ public class tankGameRough extends JComponent implements KeyListener {
         powerD.setEditable(false);
         healthD.setEditable(false);
         eHealthD.setEditable(false);
+        weapon.setEditable(false);
+
+
 
         // Used to keep track of time used to draw and update the game
         // This is used to limit the framerate later on
@@ -491,6 +520,17 @@ public class tankGameRough extends JComponent implements KeyListener {
                         }
                     }
                 });
+
+                //if nMissile is true
+                if (nMissile) {
+                    //display current weapon
+                    weapon.setText("Current Weapon: missile");
+                } //if nuke is true
+                else if (nuke) {
+                    //display current weapon
+                    weapon.setText("Current Weapon: Nuke");
+                }
+
                 //if the missile has not hit the ground, activate the player function
                 if (!missileGround) {
                     player();
@@ -500,10 +540,22 @@ public class tankGameRough extends JComponent implements KeyListener {
                 if (!ready && missileGround && !eDead) {
                     if (!eLaunch) {
                         //generate a random number for the power
-                        randAngle = (int) (Math.random() * (90 - 0 + 0)) + 0;
-                        randPower = (int) (Math.random() * (Gamount - Lamount + Lamount)) + Lamount;
+                        randAngle = (int) (Math.random() * (90 - 0 + 1)) + 0;
+                        randPower = (int) (Math.random() * (Gamount - Lamount + 1)) + Lamount;
                         //set eLaunch equal to true
                         eLaunch = true;
+                    }
+                    //generate a random number betweeen 0 and 1
+                    randNukes = (int) (Math.random() * (1 - 0 + 1)) + 0;
+                    //if rand Nukes = 0
+                    if (randNukes == 0) {
+                        //set eNukes to false
+                        eNukes = false;
+                    }
+                    //if randNukes equals 1
+                    if (randNukes == 1) {
+                        //set eNukes to true
+                        eNukes = true;
                     }
                     //pass randAngle and randPower into the enemy function
                     enemy(randAngle, randPower);
@@ -529,31 +581,58 @@ public class tankGameRough extends JComponent implements KeyListener {
                 }
                 ////test if missile hit enemy tank or the ground underneath the enemy tank
                 if (missile.intersects(eTank) || (((missile.x >= eTank.x && missile.x <= eTank.x + 20) && missile.y == 441))) {
-                    //subtract 20 from enemy health
-                    eHealth = eHealth - 20;
-                    //reset missile position
-                    missile.x = tank.x + 10;
-                    missile.y = tank.y - 10;
-
+                    //if nMissile is true
+                    if (nMissile) {
+                        //subtract 20 from enemy health
+                        eHealth = eHealth - 20;
+                        //reset missile position
+                        missile.x = tank.x + 10;
+                        missile.y = tank.y - 10;
+                    } //if nuke is true
+                    else if (nuke) {
+                        //set enemy helath to 0
+                        eHealth = 0;
+                    }
                 }
 
                 //if enemy missile hits player tank
                 if (eMissile.intersects(tank)) {
-                    //subtract 20 from player health
-                    health = health - 20;
+                    //if eNukes is falsse
+                    if (!eNukes) {
+                        //subtract 20 from player health
+                        health = health - 20;
+                    } //eNukes is true
+                    else if (eNukes) {
+                        //set health to 0
+                        health = 0;
+                    }
                 }
                 //if enemy missile hits enemy tank
                 if (eMissile.intersects(eTank)) {
-                    //subtract 20 from enemy health
-                    eHealth = eHealth - 20;
+                    //if eNukes is false
+                    if (!eNukes) {
+                        //subtract 20 from enemy health
+                        eHealth = eHealth - 20;
+                    } //if eNukes is true
+                    else if (eNukes) {
+                        //set eHealth equal to 0
+                        eHealth = 0;
+                    }
                 }
                 //test if missile hit player tank or the ground underneath the players tank
                 if (missile.intersects(tank) || (((missile.x >= tank.x && missile.x <= tank.x + 20) && missile.y == 441))) {
-                    //subtract 20 from health
-                    health = health - 20;
-                    //reset missile position
-                    missile.x = tank.x + 10;
-                    missile.y = tank.y - 10;
+                    //if nMissile is true
+                    if (nMissile) {
+                        //subtract 20 from health
+                        health = health - 20;
+                        //reset missile position
+                        missile.x = tank.x + 10;
+                        missile.y = tank.y - 10;
+                    } //if nuke is true
+                    else if (nuke) {
+                        //set health to 0
+                        health = 0;
+                    }
                 }
 
                 //if the enemy missile passes y co-ordiante 441 (hits ground)
@@ -690,6 +769,16 @@ public class tankGameRough extends JComponent implements KeyListener {
             lv2 = false;
             lv3 = true;
         }
+        //set normal missile to true and nuke to false
+        if (key == KeyEvent.VK_N) {
+            nMissile = true;
+            nuke = false;
+        }
+        //set normal missile to false and nuke to true
+        if (key == KeyEvent.VK_B) {
+            nuke = true;
+            nMissile = false;
+        }
 
     }
 
@@ -716,6 +805,7 @@ public class tankGameRough extends JComponent implements KeyListener {
         if (key == KeyEvent.VK_SPACE) {
             resetGame = false;
         }
+
 
 
     }
