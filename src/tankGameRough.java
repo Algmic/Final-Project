@@ -530,6 +530,7 @@ public class tankGameRough extends JComponent implements KeyListener {
                 if (!missileGround) {
                     player();
                 }
+                
 
                 //test if the missile hit the ground
                 if (!ready && missileGround && !eDead) {
@@ -652,7 +653,7 @@ public class tankGameRough extends JComponent implements KeyListener {
                     //update textbox
                     eHealthD.setText("Enemy Health: " + eHealthS);
 
-
+                    
                     //if health is equal to 0
                     if (health == 0) {
                         //set dead equal to true
